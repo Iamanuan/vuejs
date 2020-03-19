@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<div id="app">
+  <cpn :number1="num1" :number2="num2" @num1change="fnum1change" @num2change="fnum2change" />
+</div>
+
+<template id="cpn">
+  <div>
+    <h2>props: {{number1}}</h2>
+    <h2>data: {{dnumber1}}</h2>
+    <input type="text" :value="dnumber1" @input="num1input">
+
+    <h2>prop: {{number2}}</h2>
+    <h2>data: {{dnumber2}}</h2>
+    <input type="text" :value="dnumber2" @input="num2input">
+  </div>
+</template>
+
+<script src="../js/vue.js"></script>
+
+<script>
+
+  /*
+  * 需求说明：
+  *
+  * 1、从父组件将数据传到子组件
+  *
+  * 2、在子组件input中修改后的数据传到父组件
+  *
+  * 3、在子组件中将两个数据做关联（num1*100=num2、num2/100=num1）
+  *
+  * */
+
+  const app = new Vue({
+    el: '#app',
+    data: {
+      num1:1,
+      num2:0
+    },
+    methods:{
+      fnum1change(value){
+        this.num1 = parseFloat(value)
+      },
+      fnum2change(value){
+        this.num2 = parseFloat(value)
+      }
+    },
+    components:{
+      cpn:{
+        template:"#cpn",
+        props:{
+          number1:Number,
+          number2:Number
+        },
+        data(){
+          return {
+            dnumber1:this.number1,
+            dnumber2:this.number2
+          }
+        },
+        methods:{
+          num1input(event){
+            this.dnumber1 = event.target.value
+            this.$emit('num1change',this.dnumber1)
+
+            this.dnumber2 = this.dnumber1 * 100
+            this.$emit('num2change',this.dnumber2)
+          },
+          num2input(event){
+            this.dnumber2 = event.target.value
+            this.$emit('num2change',this.dnumber2)
+
+            this.dnumber1 = this.dnumber2 / 100
+            this.$emit('num1change',this.dnumber1)
+          }
+        }
+      }
+    }
+  })
+</script>
+</body>
+</html>
