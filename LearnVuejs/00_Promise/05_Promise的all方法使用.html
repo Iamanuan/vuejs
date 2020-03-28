@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script>
+  Promise.all([
+      // new Promise((resolve,reject) => {
+      //   $.ajax({
+      //     url: '',
+      //     success: function (data) {
+      //       resolve(data)
+      //     }
+      //   })
+      // }),
+      // new Promise((resolve, reject) => {
+      //   $.ajax({
+      //     url: '',
+      //     success: function (data) {
+      //       resolve(data)
+      //     }
+      //   })
+      // })
+
+    new Promise((resolve,reject) => {
+      setTimeout(() => {
+        resolve({name: 'fy',age:16})
+      },1000)
+    }),
+    new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve({name: 'kobe',age: 18})
+      })
+    })
+
+  ]).then(results => {
+    console.log(results);
+  })
+</script>
+</body>
+</html>
