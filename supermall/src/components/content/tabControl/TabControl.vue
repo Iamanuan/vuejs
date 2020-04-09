@@ -26,7 +26,8 @@
     },
     methods:{
       itemClick(index){
-        this.currentIndex = index
+        this.currentIndex = index;
+        this.$emit('tabClick',index)
       }
     }
   }
@@ -39,6 +40,7 @@
     font-size: 15px;
     height: 40px;
     line-height: 40px;
+    background-color: #ffffff;
   }
 
   .tab-control-item{
