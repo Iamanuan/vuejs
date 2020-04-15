@@ -3,7 +3,7 @@
     <div v-if="Object.keys(commentInfo).length !== 0" class="comment-info">
       <div class="info-header">
         <div class="header-title">用户评价</div>
-        <div class="hearder-more">
+        <div class="header-more">
           更多
           <i class="arrow-right"></i>
         </div>

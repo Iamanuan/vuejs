@@ -1,14 +1,14 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-nav"/>
-    <scroll class="content" ref="scroll">
+    <detail-nav-bar class="detail-nav" @titleClick="titleClick"/>
+    <scroll class="content" ref="scroll" :probe-type="3 " @scroll="contentScroll">
       <detail-swiper :top-images="topImages"/>
       <detail-base-info :goods="goods" />
       <detail-shop-info :shop="shopInfo" />
-      <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"/>
-      <detail-param-info :param-info="paramInfo"/>
-      <detail-comment-info :comment-info="commentInfo"/>
-      <detail-recommend-info :recommend-list="recommendList"/>
+      <detail-goods-info :detail-info="detailInfo" @detailImageLoad="detailImageLoad"/>
+      <detail-param-info ref="params" :param-info="paramInfo"/>
+      <detail-comment-info ref="comment" :comment-info="commentInfo"/>
+      <detail-recommend-info ref="recommend" :recommend-list="recommendList"/>
       <goods-list :goods="recommendList"/>
 
     </scroll>
@@ -30,6 +30,9 @@
   import GoodsList from "components/content/goods/GoodsList";
 
   import {getDetail,getRecommend, Goods, Shop, GoodsParam} from "network/datail";
+
+  import {itemListenerMixin} from "common/mixin";
+  import {debouce} from "common/utils";
 
   export default {
     name: "Detail",
@@ -54,9 +57,12 @@
         detailInfo:{},
         paramInfo:{},
         commentInfo:{},
-        recommendList:[]
+        recommendList:[],
+        themeTopYs:[],
+        getThemeTopY:null
       }
     },
+    mixins:[itemListenerMixin],
     created() {
       //1、保存传入的iid
       this.iid = this.$route.params.iid
@@ -85,18 +91,56 @@
           this.commentInfo = data.rate.list[0]
         }
 
+        //根据最新的数据，对应的DOM已经被渲染出来
+        //但是图片依然没有加载完
+        // this.$nextTick(() => {
+        //   this.themeTopYs = []
+        //   this.themeTopYs.push(0)
+        //   this.themeTopYs.push(this.$refs.params.$el.offsetTop)
+        //   this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
+        //   this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
+        //
+        //   console.log(this.themeTopYs);
+        // })
       })
 
       //3、获取推荐信息
       getRecommend().then(res => {
-        console.log(res);
+        // console.log(res);
         this.recommendList = res.data.list
+      })
+
+      //4、给getThemeTopY赋值、防抖
+      this.getThemeTopY = debouce(() => {
+        this.themeTopYs = []
+        this.themeTopYs.push(0)
+        this.themeTopYs.push(this.$refs.params.$el.offsetTop)
+        this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
+        this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
+        console.log(this.themeTopYs);
       })
     },
     methods:{
-      imageLoad(){
-        this.$refs.scroll.refresh()
+      detailImageLoad(){
+        console.log('1111');
+        this.newRefresh()
+        // this.$refs.scroll.refresh()
+        this.getThemeTopY()
+      },
+      titleClick(index){
+        console.log(index);
+        this.$refs.scroll.scrollTo(0,-this.themeTopYs[index],500)
+      },
+      contentScroll(position){
+        console.log(position);
       }
+    },
+    mounted() {
+
+
+    },
+    destroyed() {
+      this.$bus.$off('detailImgLoad', this.itemImgListener)
     }
   }
 </script>
