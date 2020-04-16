@@ -172,6 +172,10 @@
         product.iid = this.iid
 
         //2、将商品添加到购物车里
+        // this.$router.cartList.push(product)
+        // this.$store.commit('addCart',product )
+        console.log(product);
+        this.$store.dispatch('addCart',product)
       }
     },
     mounted() {
