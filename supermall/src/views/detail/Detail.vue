@@ -13,6 +13,7 @@
     </scroll>
     <detail-bottom-bar @addToCart="addToCart"/>
     <back-top @click.native="backClick" v-show="isShowBackTop"/>
+<!--    <toast :message="message" :show="show"/>-->
   </div>
 </template>
 
@@ -30,17 +31,21 @@
 
   import Scroll from "components/common/scorll/Scroll";
   import GoodsList from "components/content/goods/GoodsList";
+  // import Toast from "components/common/toast/Toast";
 
   import {getDetail,getRecommend, Goods, Shop, GoodsParam} from "network/datail";
 
   import {itemListenerMixin, backTopMixin} from "common/mixin";
   import {debouce} from "common/utils";
 
+  import {mapActions} from 'vuex'
+
   export default {
     name: "Detail",
     components:{
       Scroll,
       GoodsList,
+      // Toast,
       DetailNavBar,
       DetailBottomBar,
       DetailSwiper,
@@ -63,7 +68,9 @@
         recommendList:[],
         themeTopYs:[],
         getThemeTopY:null,
-        currentIndex:0
+        currentIndex:0,
+        message:'',
+        show:false
       }
     },
     mixins:[itemListenerMixin,backTopMixin],
@@ -126,6 +133,7 @@
       })
     },
     methods:{
+      ...mapActions(['addCart']),
       detailImageLoad(){
         this.newRefresh()
         // this.$refs.scroll.refresh()
@@ -171,11 +179,31 @@
         product.price = this.goods.realPrice
         product.iid = this.iid
 
-        //2、将商品添加到购物车里
+        //2、将商品添加到购物车里(1.Promise 2.mapActions)
         // this.$router.cartList.push(product)
         // this.$store.commit('addCart',product )
         console.log(product);
-        this.$store.dispatch('addCart',product)
+
+        // this.addCart(product).then(res => {
+        //   console.log(res);
+        // })
+
+        this.$store.dispatch('addCart',product).then(res => {
+          // this.show = true
+          // this.message = res
+          //
+          // setTimeout(() => {
+          //   this.show = false
+          //   this.message = ''
+          // },1500)
+          //
+          // console.log(res);
+
+          console.log(this.$toast);
+
+          this.$toast.show(res,1500)
+        })
+
       }
     },
     mounted() {
